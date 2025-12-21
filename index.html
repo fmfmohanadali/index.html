@@ -204,8 +204,40 @@
         // -- قاعدة البيانات --
         let userApiKey = localStorage.getItem('gemini_api_key') || "";
         let videos = JSON.parse(localStorage.getItem('safeKidsVideos')) || [
-            { id: 1, title: 'حكاية الحروف العربية', category: 'education', type: 'video', src: 'yXzFhQ54bQk', thumb: 'https://img.youtube.com/vi/yXzFhQ54bQk/hqdefault.jpg' },
-            { id: 2, title: 'قصة الأمانة الصغير', category: 'stories', type: 'video', src: '0Kq3T9-j9l8', thumb: 'https://img.youtube.com/vi/0Kq3T9-j9l8/hqdefault.jpg' }
+            { 
+                id: 101, 
+                title: 'قصص حيوانات للأطفال', 
+                category: 'stories', 
+                type: 'playlist', 
+                src: 'PLGl4F58BGyEaDnGkTJzBdxIUFOwEJIPdJ', 
+                thumb: 'https://img.youtube.com/vi/qI5nN_9X_X8/hqdefault.jpg' 
+            },
+            { 
+                id: 101, 
+                title: 'كرتون أطفال مع قرآن', 
+                category: 'cartoon', 
+                type: 'playlist', 
+                src: 'PLnLmaEBgQD3QnuL2hNciaqw8MhR7yD8TN', 
+                thumb: 'https://img.youtube.com/vi/qlRghfO_lWc/hqdefault.jpg' 
+            }, 
+            { 
+                id: 101, 
+                title: 'أناشيد اسلامية للأطفال - islamic song for kids', 
+                category: 'songs', 
+                type: 'playlist', 
+                src: 'PLTisR_eHsplTM6OhVcQAqkZFgsE7C0vXx', 
+                thumb: 'https://img.youtube.com/vi/41WOlAL29M0/hqdefault.jpg' 
+            },
+             { 
+                id: 101, 
+                title: 'طريقه تعليم كلمات انجليزى للأطفال من خلال الذكاء الاصطناعي', 
+                category: 'education', 
+                type: 'playlist', 
+                src: 'PLu4PafZ7KxEFnpIkmk_Fg-PWWKi0bXGZM', 
+                thumb: 'https://img.youtube.com/vi/0XvPCcpwJA0/hqdefault.jpg' 
+            },           
+            { id: 1, title: ' استمتع وتعلم🎉🤩! فيديوهات تعليمية ممتعة للأطفال| تعلم الحروف العربية |الأشكال 🚀🔺', category: 'education', type: 'video', src: 'sDRTxjGiAlE', thumb: 'https://img.youtube.com/vi/sDRTxjGiAlE/hqdefault.jpg' },
+            { id: 2, title: 'قصة الأمانة الصغير', category: 'stories', type: 'video', src: 'Hqh9gyKvZ0c', thumb: 'https://img.youtube.com/vi/Hqh9gyKvZ0c/hqdefault.jpg' }
         ];
 
         const categories = [
@@ -486,4 +518,5 @@
     </footer>    
 </body>
 </html>
+
 
