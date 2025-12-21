@@ -11,7 +11,7 @@
         body {
             font-family: 'Tajawal', sans-serif;
             background-color: #f0f9ff;
-            user-select: none; /* لمنع تحديد النص */
+            user-select: none;
         }
         .kid-card {
             transition: transform 0.2s, box-shadow 0.2s;
@@ -21,13 +21,12 @@
             transform: scale(0.95);
         }
         .category-btn.active {
-            background-color: #fbbf24; /* Amber-400 */
+            background-color: #fbbf24;
             color: #78350f;
             transform: scale(1.05);
             border: 4px solid #fff;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-        /* إخفاء شريط التمرير ولكن السماح بالتمرير */
         .hide-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -37,7 +36,7 @@
         }
         .video-container {
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            padding-bottom: 56.25%;
             height: 0;
             overflow: hidden;
             border-radius: 1rem;
@@ -49,9 +48,29 @@
             left: 0;
             width: 100%;
             height: 100%;
+            pointer-events: auto;
         }
-        .animate-bounce-slow {
-            animation: bounce 3s infinite;
+        .video-protection-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .protection-zone {
+            position: absolute;
+            pointer-events: all;
+            background: transparent;
+        }
+        .zone-top-right { top: 0; right: 0; width: 25%; height: 60px; }
+        .zone-bottom-right { bottom: 0; right: 0; width: 100px; height: 50px; }
+        .zone-top-left { top: 0; left: 0; width: 100px; height: 60px; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
         }
     </style>
 </head>
@@ -72,31 +91,43 @@
 
     <!-- Categories -->
     <nav class="p-4 pb-2">
-        <div class="flex gap-3 overflow-x-auto hide-scrollbar py-2" id="categoryList">
-            <!-- Categories injected by JS -->
-        </div>
+        <div class="flex gap-3 overflow-x-auto hide-scrollbar py-2" id="categoryList"></div>
     </nav>
 
     <!-- Content Grid -->
     <main class="flex-1 overflow-y-auto p-4 hide-scrollbar" id="mainContent">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pb-20" id="videoGrid">
-            <!-- Videos injected by JS -->
-        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pb-20" id="videoGrid"></div>
     </main>
 
     <!-- Video Modal Player -->
-    <div id="videoModal" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col justify-center items-center p-4 backdrop-blur-sm">
-        <div class="w-full max-w-4xl bg-white rounded-2xl overflow-hidden shadow-2xl animate-fade-in">
+    <div id="videoModal" class="fixed inset-0 bg-black/95 z-50 hidden flex flex-col justify-center items-center p-4 backdrop-blur-md">
+        <div class="w-full max-w-4xl bg-white rounded-2xl overflow-hidden shadow-2xl animate-fade-in relative">
             <div class="flex justify-between items-center p-4 bg-sky-500 text-white">
                 <h3 id="modalTitle" class="font-bold text-lg truncate pr-2">عنوان الفيديو</h3>
-                <button onclick="closeVideo()" class="bg-white/20 hover:bg-white/40 rounded-full p-2 transition">
-                    <i data-lucide="x" class="w-6 h-6 text-white"></i>
-                </button>
-            </div>
-            <div class="p-2 bg-black">
-                <div class="video-container" id="playerContainer">
-                    <!-- Iframe injected here -->
+                <div class="flex gap-2">
+                    <button id="geminiQuizBtn" class="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 transition">
+                        <span>أسئلة ذكية ✨</span>
+                    </button>
+                    <button onclick="closeVideo()" class="bg-white/20 hover:bg-white/40 rounded-full p-2 transition">
+                        <i data-lucide="x" class="w-6 h-6 text-white"></i>
+                    </button>
                 </div>
+            </div>
+            <div class="p-2 bg-black relative">
+                <div class="video-container" id="playerContainer"></div>
+                <div class="video-protection-overlay">
+                    <div class="protection-zone zone-top-right"></div>
+                    <div class="protection-zone zone-bottom-right"></div>
+                    <div class="protection-zone zone-top-left"></div>
+                </div>
+            </div>
+            <!-- Gemini Insights Area -->
+            <div id="geminiInsights" class="hidden p-4 bg-yellow-50 border-t-2 border-yellow-100 overflow-y-auto max-h-48">
+                <div class="flex items-center gap-2 mb-2 text-yellow-700 font-bold">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    <span>تحدي الذكاء</span>
+                </div>
+                <div id="geminiText" class="text-sm text-gray-700 leading-relaxed italic"></div>
             </div>
         </div>
     </div>
@@ -108,7 +139,7 @@
                 <i data-lucide="shield-check" class="w-12 h-12 mx-auto mb-2"></i>
                 <h3 class="font-bold text-xl">بوابة الأهل</h3>
             </div>
-            <p class="mb-4 text-gray-600 font-bold" id="mathQuestion">كم يساوي 3 + 4؟</p>
+            <p class="mb-4 text-gray-600 font-bold" id="mathQuestion"></p>
             <input type="number" id="mathAnswer" class="w-full p-3 border-2 border-gray-300 rounded-xl text-center text-xl mb-4 focus:border-sky-500 outline-none" placeholder="اكتب الناتج">
             <div class="flex gap-2">
                 <button onclick="checkParentalGate()" class="flex-1 bg-sky-500 text-white font-bold py-3 rounded-xl hover:bg-sky-600">دخول</button>
@@ -119,7 +150,6 @@
 
     <!-- Admin Panel Modal -->
     <div id="adminModal" class="fixed inset-0 bg-white z-[60] hidden flex flex-col h-full overflow-hidden">
-        <!-- Admin Header -->
         <div class="bg-slate-800 text-white p-4 shadow-lg flex justify-between items-center shrink-0">
             <div class="flex items-center gap-2">
                 <i data-lucide="settings" class="w-6 h-6 text-sky-400"></i>
@@ -129,56 +159,70 @@
                 <i data-lucide="x" class="w-6 h-6"></i>
             </button>
         </div>
-
-        <!-- Admin Content -->
         <div class="flex-1 overflow-y-auto p-4 bg-slate-50">
-            
-            <!-- Add New Video Section -->
+            <!-- Gemini Parent AI -->
+            <div class="mb-6 bg-gradient-to-r from-purple-600 to-indigo-600 p-4 rounded-xl text-white shadow-lg">
+                <h3 class="font-bold mb-2 flex items-center gap-2">
+                    <i data-lucide="brain-circuit"></i> تحليل المحتوى الذكي ✨
+                </h3>
+                <p class="text-sm opacity-90 mb-4">اضغط للحصول على نصائح تربوية بناءً على فيديوهاتك المضافة.</p>
+                <button onclick="generateParentAdvice()" id="adviceBtn" class="bg-white text-indigo-600 px-4 py-2 rounded-lg font-bold hover:bg-indigo-50 transition flex items-center gap-2">
+                    <span id="adviceBtnText">الحصول على نصيحة ✨</span>
+                </button>
+                <div id="adviceDisplay" class="hidden mt-4 p-3 bg-white/10 rounded-lg text-sm italic border border-white/20 animate-fade-in"></div>
+            </div>
+
             <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-6">
                 <h3 class="font-bold text-slate-700 mb-4 flex items-center gap-2">
                     <i data-lucide="plus-circle" class="text-green-500"></i> إضافة فيديو جديد
                 </h3>
                 <div class="space-y-3">
-                    <div>
-                        <label class="block text-sm text-slate-500 mb-1">رابط يوتيوب (Link)</label>
-                        <input type="text" id="newVideoUrl" class="w-full p-2 border rounded-lg text-left ltr" placeholder="https://www.youtube.com/watch?v=..." oninput="autoDetectVideoId()">
-                    </div>
-                    <div>
-                        <label class="block text-sm text-slate-500 mb-1">عنوان الفيديو</label>
-                        <input type="text" id="newVideoTitle" class="w-full p-2 border rounded-lg" placeholder="مثال: تعليم الألوان">
-                    </div>
-                    <div>
-                        <label class="block text-sm text-slate-500 mb-1">التصنيف</label>
-                        <select id="newVideoCategory" class="w-full p-2 border rounded-lg bg-white">
-                            <!-- Populated by JS -->
-                        </select>
-                    </div>
-                    <button onclick="addNewVideo()" class="w-full bg-green-500 text-white font-bold py-3 rounded-lg hover:bg-green-600 transition shadow-lg shadow-green-200">
-                        إضافة الفيديو
-                    </button>
+                    <input type="text" id="newVideoUrl" class="w-full p-2 border rounded-lg" placeholder="رابط يوتيوب">
+                    <input type="text" id="newVideoTitle" class="w-full p-2 border rounded-lg" placeholder="العنوان">
+                    <select id="newVideoCategory" class="w-full p-2 border rounded-lg bg-white"></select>
+                    <button onclick="addNewVideo()" class="w-full bg-green-500 text-white font-bold py-3 rounded-lg hover:bg-green-600 transition shadow-lg shadow-green-200">إضافة الفيديو</button>
                 </div>
             </div>
-
-            <!-- Manage Videos Section -->
             <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-slate-700 flex items-center gap-2">
-                        <i data-lucide="list-video" class="text-sky-500"></i> المحتوى الحالي
-                    </h3>
+                    <h3 class="font-bold text-slate-700 flex items-center gap-2"><i data-lucide="list-video" class="text-sky-500"></i> المحتوى الحالي</h3>
                     <button onclick="resetToDefaults()" class="text-xs text-red-500 underline">استعادة الأصلي</button>
                 </div>
-                <div id="adminVideoList" class="space-y-3">
-                    <!-- List injected by JS -->
-                </div>
+                <div id="adminVideoList" class="space-y-3"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // Initialize Lucide Icons
         lucide.createIcons();
 
-        // --- Data Configuration ---
+        // Gemini API Configuration
+        const apiKey = ""; // Provided by the environment
+
+        async function callGemini(prompt, systemInstruction = "") {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                systemInstruction: { parts: [{ text: systemInstruction }] }
+            };
+
+            for (let i = 0; i < 5; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+                    return result.candidates?.[0]?.content?.parts?.[0]?.text || "عذراً، لم أستطع توليد رد حالياً.";
+                } catch (e) {
+                    const delay = Math.pow(2, i) * 1000;
+                    await new Promise(r => setTimeout(r, delay));
+                }
+            }
+            return "فشل الاتصال بالذكاء الاصطناعي بعد عدة محاولات.";
+        }
+
         const categories = [
             { id: 'all', name: 'الكل', icon: 'layout-grid', color: 'bg-indigo-500' },
             { id: 'education', name: 'تعليم', icon: 'book-open', color: 'bg-green-500' },
@@ -187,79 +231,26 @@
             { id: 'stories', name: 'قصص', icon: 'book', color: 'bg-purple-500' }
         ];
 
-        // Default Safe Data
         const defaultVideos = [
-            {
-                id: 1,
-                title: 'تعلم الحروف العربية',
-                category: 'education',
-                type: 'youtube',
-                src: 'yXzFhQ54bQk', 
-                thumb: 'https://img.youtube.com/vi/yXzFhQ54bQk/hqdefault.jpg'
-            },
-            {
-                id: 2,
-                title: 'سورة الفاتحة للأطفال',
-                category: 'education',
-                type: 'youtube',
-                src: '0Kq3T9-j9l8',
-                thumb: 'https://img.youtube.com/vi/0Kq3T9-j9l8/hqdefault.jpg'
-            },
-            {
-                id: 3,
-                title: 'الألوان باللغة العربية',
-                category: 'education',
-                type: 'youtube',
-                src: 'z8yT_B1tYyE',
-                thumb: 'https://img.youtube.com/vi/z8yT_B1tYyE/hqdefault.jpg'
-            },
-            {
-                id: 4,
-                title: 'كرتون الخروف شون',
-                category: 'cartoons',
-                type: 'youtube',
-                src: 't4hL1G6hL8k', 
-                thumb: 'https://img.youtube.com/vi/t4hL1G6hL8k/hqdefault.jpg'
-            },
-             {
-                id: 5,
-                title: 'قصة الأرنب والسلحفاة',
-                category: 'stories',
-                type: 'youtube',
-                src: 'SKz8KjF6eM0',
-                thumb: 'https://img.youtube.com/vi/SKz8KjF6eM0/hqdefault.jpg'
-            },
-            {
-                id: 6,
-                title: 'أناشيد الروضة - ماما جابت بيبي',
-                category: 'songs',
-                type: 'youtube',
-                src: '71HIe5x-gjk',
-                thumb: 'https://img.youtube.com/vi/71HIe5x-gjk/hqdefault.jpg'
-            }
+            { id: 1, title: 'تعلم الحروف العربية', category: 'education', type: 'youtube', src: 'yXzFhQ54bQk', thumb: 'https://img.youtube.com/vi/yXzFhQ54bQk/hqdefault.jpg' },
+            { id: 2, title: 'سورة الفاتحة للأطفال', category: 'education', type: 'youtube', src: '0Kq3T9-j9l8', thumb: 'https://img.youtube.com/vi/0Kq3T9-j9l8/hqdefault.jpg' },
+            { id: 3, title: 'الألوان باللغة العربية', category: 'education', type: 'youtube', src: 'z8yT_B1tYyE', thumb: 'https://img.youtube.com/vi/z8yT_B1tYyE/hqdefault.jpg' }
         ];
 
-        // State
         let videos = [];
         let currentCategory = 'all';
         let parentalAnswer = 0;
-
-        // --- Core Functions ---
 
         function init() {
             loadVideos();
             renderCategories();
             renderVideos();
-            renderAdminCategories(); // Prepare admin dropdown
+            renderAdminCategories();
         }
 
         function loadVideos() {
             const stored = localStorage.getItem('safeKidsVideos');
-            if (stored) {
-                videos = JSON.parse(stored);
-            } else {
-                videos = JSON.parse(JSON.stringify(defaultVideos)); // Deep copy
-            }
+            videos = stored ? JSON.parse(stored) : [...defaultVideos];
         }
 
         function saveVideos() {
@@ -271,10 +262,8 @@
         function renderCategories() {
             const container = document.getElementById('categoryList');
             container.innerHTML = categories.map(cat => `
-                <button 
-                    onclick="filterCategory('${cat.id}')"
-                    class="category-btn whitespace-nowrap px-6 py-3 rounded-full font-bold text-white shadow-md transition-all flex items-center gap-2 ${cat.id === currentCategory ? 'active ' + cat.color : 'bg-white text-gray-500 hover:bg-gray-50'}"
-                >
+                <button onclick="filterCategory('${cat.id}')"
+                    class="category-btn whitespace-nowrap px-6 py-3 rounded-full font-bold text-white shadow-md transition-all flex items-center gap-2 ${cat.id === currentCategory ? 'active ' + cat.color : 'bg-white text-gray-500 hover:bg-gray-50'}">
                     <i data-lucide="${cat.icon}" class="w-4 h-4"></i>
                     <span>${cat.name}</span>
                 </button>
@@ -290,101 +279,110 @@
 
         function renderVideos() {
             const grid = document.getElementById('videoGrid');
-            const filtered = currentCategory === 'all' 
-                ? videos 
-                : videos.filter(v => v.category === currentCategory);
-
-            if (filtered.length === 0) {
-                grid.innerHTML = `
-                    <div class="col-span-full text-center py-20 opacity-50">
-                        <i data-lucide="frown" class="w-16 h-16 mx-auto mb-2 text-gray-400"></i>
-                        <p class="text-xl text-gray-500 font-bold">لا توجد فيديوهات هنا</p>
-                    </div>
-                `;
-                lucide.createIcons();
-                return;
-            }
-
+            const filtered = currentCategory === 'all' ? videos : videos.filter(v => v.category === currentCategory);
             grid.innerHTML = filtered.map(video => `
                 <div onclick="playVideo('${video.src}', '${video.title}', '${video.type}')" 
                      class="kid-card bg-white rounded-2xl overflow-hidden shadow-lg border-b-4 border-gray-200 hover:border-sky-400 group relative">
-                    <div class="relative aspect-video">
-                        <img src="${video.thumb}" class="w-full h-full object-cover" alt="${video.title}" onerror="this.src='https://placehold.co/600x400/png?text=Video'">
+                    <div class="aspect-video relative">
+                        <img src="${video.thumb}" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-black/20 flex items-center justify-center group-hover:bg-black/10 transition">
                             <div class="bg-white/90 rounded-full p-3 shadow-xl transform group-hover:scale-110 transition">
                                 <i data-lucide="play" class="w-8 h-8 text-sky-500 fill-sky-500 ml-1"></i>
                             </div>
                         </div>
                     </div>
-                    <div class="p-3">
-                        <h3 class="font-bold text-gray-800 text-lg leading-tight line-clamp-2 text-right">${video.title}</h3>
+                    <div class="p-3 text-right">
+                        <h3 class="font-bold text-gray-800 text-lg line-clamp-2">${video.title}</h3>
+                        <span class="text-xs text-sky-500 bg-sky-50 px-2 py-1 rounded-full mt-2 inline-block">${categories.find(c => c.id === video.category).name}</span>
                     </div>
                 </div>
             `).join('');
             lucide.createIcons();
         }
 
-        // --- Player Logic ---
-
         function playVideo(src, title, type) {
             const modal = document.getElementById('videoModal');
             const container = document.getElementById('playerContainer');
-            const titleEl = document.getElementById('modalTitle');
-
-            titleEl.textContent = title;
+            const insights = document.getElementById('geminiInsights');
+            const quizBtn = document.getElementById('geminiQuizBtn');
+            
+            document.getElementById('modalTitle').textContent = title;
+            insights.classList.add('hidden');
             modal.classList.remove('hidden');
 
-            let embedCode = '';
-            if (type === 'youtube') {
-                embedCode = `<iframe src="https://www.youtube-nocookie.com/embed/${src}?autoplay=1&rel=0&modestbranding=1&controls=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
-            } else {
-                embedCode = `<video controls autoplay class="w-full h-full"><source src="${src}" type="video/mp4">المتصفح لا يدعم الفيديو</video>`;
-            }
+            quizBtn.onclick = () => generateQuiz(title);
 
-            container.innerHTML = embedCode;
+            if (type === 'youtube') {
+                container.innerHTML = `<iframe 
+                    src="https://www.youtube-nocookie.com/embed/${src}?autoplay=1&rel=0&modestbranding=1&iv_load_policy=3&showinfo=0&disablekb=1" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen></iframe>`;
+            } else {
+                container.innerHTML = `<video controls autoplay class="w-full h-full"><source src="${src}" type="video/mp4"></video>`;
+            }
+        }
+
+        async function generateQuiz(videoTitle) {
+            const insights = document.getElementById('geminiInsights');
+            const geminiText = document.getElementById('geminiText');
+            insights.classList.remove('hidden');
+            geminiText.textContent = "جاري التفكير في أسئلة ذكية...";
+            
+            const prompt = `أعطني 3 أسئلة تفاعلية بسيطة للأطفال يمكن للأهل طرحها بعد مشاهدة فيديو بعنوان "${videoTitle}". اجعلها تشجع على التفكير والقيم.`;
+            const systemPrompt = "أنت مساعد تربوي متخصص في أدب الطفل والتعلم التفاعلي. رد باللغة العربية بأسلوب لطيف ومناسب للأطفال.";
+            
+            const result = await callGemini(prompt, systemPrompt);
+            geminiText.textContent = result;
+        }
+
+        async function generateParentAdvice() {
+            const btn = document.getElementById('adviceBtn');
+            const btnText = document.getElementById('adviceBtnText');
+            const display = document.getElementById('adviceDisplay');
+            
+            btn.disabled = true;
+            btnText.textContent = "جاري التحليل... ✨";
+            
+            const videoTitles = videos.map(v => v.title).join(", ");
+            const prompt = `بناءً على قائمة الفيديوهات هذه التي يشاهدها طفلي: [${videoTitles}]، قدم لي نصيحة تربوية واحدة مختصرة وملهمة حول كيفية تعزيز التعلم من هذا المحتوى.`;
+            const systemPrompt = "أنت خبير في التربية الإيجابية وتحليل المحتوى الرقمي للأطفال. قدم نصيحة عملية ومختصرة للأهل.";
+            
+            const result = await callGemini(prompt, systemPrompt);
+            
+            display.textContent = result;
+            display.classList.remove('hidden');
+            btn.disabled = false;
+            btnText.textContent = "الحصول على نصيحة أخرى ✨";
         }
 
         function closeVideo() {
-            const modal = document.getElementById('videoModal');
-            const container = document.getElementById('playerContainer');
-            modal.classList.add('hidden');
-            container.innerHTML = ''; 
+            document.getElementById('videoModal').classList.add('hidden');
+            document.getElementById('playerContainer').innerHTML = '';
         }
 
-        // --- Parental Gate Logic ---
-
         function showParentalGate() {
-            const modal = document.getElementById('parentalModal');
-            const questionEl = document.getElementById('mathQuestion');
-            const input = document.getElementById('mathAnswer');
-            
             const n1 = Math.floor(Math.random() * 9) + 1;
             const n2 = Math.floor(Math.random() * 9) + 1;
             parentalAnswer = n1 + n2;
-            
-            questionEl.textContent = `للوالدين فقط: كم يساوي ${n1} + ${n2}؟`;
-            input.value = '';
-            modal.classList.remove('hidden');
+            document.getElementById('mathQuestion').textContent = `للوالدين فقط: كم يساوي ${n1} + ${n2}؟`;
+            document.getElementById('mathAnswer').value = '';
+            document.getElementById('parentalModal').classList.remove('hidden');
         }
 
         function checkParentalGate() {
-            const input = document.getElementById('mathAnswer');
-            if (parseInt(input.value) === parentalAnswer) {
+            const ans = document.getElementById('mathAnswer').value;
+            if (parseInt(ans) === parentalAnswer) {
                 closeParentalModal();
-                openAdminPanel(); // Open Admin instead of alert
+                openAdminPanel();
             } else {
-                input.classList.add('border-red-500', 'bg-red-50');
-                setTimeout(() => {
-                    input.classList.remove('border-red-500', 'bg-red-50');
-                }, 1000);
+                alert('إجابة خاطئة!');
             }
         }
 
         function closeParentalModal() {
             document.getElementById('parentalModal').classList.add('hidden');
         }
-
-        // --- Admin Panel Logic ---
 
         function openAdminPanel() {
             renderAdminVideoList();
@@ -397,110 +395,59 @@
 
         function renderAdminCategories() {
             const select = document.getElementById('newVideoCategory');
-            // Filter out 'all' from dropdown
-            const validCats = categories.filter(c => c.id !== 'all');
-            select.innerHTML = validCats.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            select.innerHTML = categories.filter(c => c.id !== 'all').map(c => `<option value="${c.id}">${c.name}</option>`).join('');
         }
 
         function renderAdminVideoList() {
             const list = document.getElementById('adminVideoList');
-            if (videos.length === 0) {
-                list.innerHTML = '<p class="text-center text-gray-400">لا توجد فيديوهات</p>';
-                return;
-            }
-            list.innerHTML = videos.slice().reverse().map(v => `
+            list.innerHTML = videos.map(v => `
                 <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
-                    <img src="${v.thumb}" class="w-16 h-9 object-cover rounded" onerror="this.src='https://placehold.co/100x60'">
-                    <div class="flex-1 min-w-0">
-                        <p class="font-bold text-sm text-slate-700 truncate">${v.title}</p>
-                        <span class="text-xs bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full">${getCategoryName(v.category)}</span>
+                    <img src="${v.thumb}" class="w-16 h-9 object-cover rounded">
+                    <div class="flex-1 min-w-0 text-right">
+                        <p class="font-bold text-sm truncate">${v.title}</p>
                     </div>
-                    <button onclick="deleteVideo(${v.id})" class="p-2 text-red-500 hover:bg-red-50 rounded-full transition">
-                        <i data-lucide="trash-2" class="w-5 h-5"></i>
-                    </button>
+                    <button onclick="deleteVideo(${v.id})" class="text-red-500"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
                 </div>
             `).join('');
             lucide.createIcons();
         }
 
-        function getCategoryName(id) {
-            const cat = categories.find(c => c.id === id);
-            return cat ? cat.name : id;
-        }
-
-        function autoDetectVideoId() {
-            const url = document.getElementById('newVideoUrl').value;
-            const id = extractYouTubeID(url);
-            if(id) {
-                // Could auto-fetch title here if we had an API, for now we rely on user input
-                // console.log("Detected ID:", id);
-            }
-        }
-
-        function extractYouTubeID(url) {
-            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-            const match = url.match(regExp);
-            return (match && match[2].length === 11) ? match[2] : null;
-        }
-
         function addNewVideo() {
-            const urlInput = document.getElementById('newVideoUrl');
-            const titleInput = document.getElementById('newVideoTitle');
-            const catInput = document.getElementById('newVideoCategory');
-
-            const url = urlInput.value.trim();
-            const title = titleInput.value.trim();
-            const category = catInput.value;
-
-            if (!url || !title) {
-                alert('الرجاء إدخال الرابط والعنوان');
-                return;
+            const url = document.getElementById('newVideoUrl').value;
+            const title = document.getElementById('newVideoTitle').value;
+            const cat = document.getElementById('newVideoCategory').value;
+            const idMatch = url.match(/(?:youtu\.be\/|youtube\.com(?:\/embed\/|\/v\/|\/watch\?v=|\/user\/\S+|\/ytscreeningroom\?v=))([\w\-]{11})/);
+            
+            if (idMatch && title) {
+                videos.push({
+                    id: Date.now(),
+                    title: title,
+                    category: cat,
+                    type: 'youtube',
+                    src: idMatch[1],
+                    thumb: `https://img.youtube.com/vi/${idMatch[1]}/hqdefault.jpg`
+                });
+                saveVideos();
+                document.getElementById('newVideoUrl').value = '';
+                document.getElementById('newVideoTitle').value = '';
+            } else {
+                alert('البيانات غير صحيحة');
             }
-
-            const videoId = extractYouTubeID(url);
-            if (!videoId) {
-                alert('رابط يوتيوب غير صحيح');
-                return;
-            }
-
-            const newVideo = {
-                id: Date.now(), // Unique ID based on timestamp
-                title: title,
-                category: category,
-                type: 'youtube',
-                src: videoId,
-                thumb: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
-            };
-
-            videos.push(newVideo);
-            saveVideos();
-
-            // Reset inputs
-            urlInput.value = '';
-            titleInput.value = '';
-            alert('تمت إضافة الفيديو بنجاح!');
         }
 
         function deleteVideo(id) {
-            if(confirm('هل أنت متأكد من حذف هذا الفيديو؟')) {
-                videos = videos.filter(v => v.id !== id);
-                saveVideos();
-            }
+            videos = videos.filter(v => v.id !== id);
+            saveVideos();
         }
 
         function resetToDefaults() {
-            if(confirm('هل تريد مسح كل التغييرات والعودة للمحتوى الأصلي؟')) {
-                localStorage.removeItem('safeKidsVideos');
-                loadVideos();
-                renderVideos();
-                renderAdminVideoList();
-            }
+            localStorage.removeItem('safeKidsVideos');
+            loadVideos();
+            renderVideos();
+            renderAdminVideoList();
         }
 
-        // --- Init ---
         init();
-
     </script>
 </body>
 </html>
-
