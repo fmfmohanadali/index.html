@@ -3,448 +3,335 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>بوابة الأطفال الآمنة</title>
+    <title>عالم المعلم مهند الذكي - الإصدار الكامل</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body {
-            font-family: 'Tajawal', sans-serif;
-            background-color: #f0f9ff;
-            user-select: none;
-        }
-        .kid-card {
-            transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
-        }
-        .kid-card:active {
-            transform: scale(0.95);
-        }
-        .category-btn.active {
-            background-color: #fbbf24;
-            color: #78350f;
-            transform: scale(1.05);
-            border: 4px solid #fff;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        .hide-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .hide-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            border-radius: 1rem;
-            background: #000;
-        }
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: auto;
-        }
-        .video-protection-overlay {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            z-index: 10;
-        }
-        .protection-zone {
-            position: absolute;
-            pointer-events: all;
-            background: transparent;
-        }
-        .zone-top-right { top: 0; right: 0; width: 25%; height: 60px; }
-        .zone-bottom-right { bottom: 0; right: 0; width: 100px; height: 50px; }
-        .zone-top-left { top: 0; left: 0; width: 100px; height: 60px; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-            animation: fadeIn 0.3s ease-out forwards;
+        :root { --primary: #0ea5e9; --secondary: #f59e0b; }
+        body { font-family: 'Tajawal', sans-serif; background-color: #f0f9ff; user-select: none; transition: all 0.5s ease; overflow: hidden; }
+        .kid-card { transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; border-radius: 2.5rem; border: 6px solid white; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .kid-card:hover { transform: translateY(-10px) rotate(1deg); box-shadow: 0 20px 30px rgba(0,0,0,0.1); }
+        .video-wrapper { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 2rem; overflow: hidden; }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        .protection-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; pointer-events: none; }
+        .blocker { position: absolute; pointer-events: all; background: transparent; }
+        .block-top { top: 0; left: 0; width: 93%; height: 15%; }
+        .block-bottom { bottom: 0; left: 0; width: 100%; height: 15%; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .ai-loading { animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .category-btn { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .category-btn.active { transform: scale(1.1); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        background-image: url('background-butterflies.png');
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+            margin-top: 20px; /* Add some space above the footer */
         }
     </style>
 </head>
-<body class="h-screen flex flex-col overflow-hidden bg-sky-100">
+<body class="h-screen flex flex-col bg-sky-50">
 
     <!-- Header -->
-    <header class="bg-white p-4 shadow-lg z-10 rounded-b-3xl border-b-4 border-sky-300">
-        <div class="flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <i data-lucide="smile" class="text-yellow-500 w-8 h-8 fill-yellow-200"></i>
-                <h1 class="text-2xl font-black text-sky-600 tracking-wide">عالم المرح</h1>
+    <header class="bg-white/90 backdrop-blur-md p-5 shadow-xl z-10 rounded-b-[3.5rem] border-b-4 border-sky-200">
+        <div class="flex justify-between items-center max-w-6xl mx-auto w-full">
+            <div class="flex items-center gap-4">
+                <div class="bg-gradient-to-br from-yellow-400 to-orange-500 p-3 rounded-2xl rotate-6 shadow-lg">
+                    <i data-lucide="rocket" class="text-white w-8 h-8"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-black text-sky-600 tracking-tight">عالم  المعلم  الذكي</h1>
+                    <p class="text-xs text-sky-400 font-bold">بوابتك للمرح والذكاء</p>
+                </div>
             </div>
-            <button onclick="showParentalGate()" class="bg-slate-200 p-2 rounded-full text-slate-500 hover:bg-slate-300 transition">
-                <i data-lucide="lock" class="w-5 h-5"></i>
+            <button onclick="showParentalGate()" class="bg-slate-100 p-3 rounded-2xl text-slate-400 hover:bg-slate-200 transition-colors">
+                <i data-lucide="settings" class="w-6 h-6"></i>
             </button>
         </div>
     </header>
 
     <!-- Categories -->
-    <nav class="p-4 pb-2">
-        <div class="flex gap-3 overflow-x-auto hide-scrollbar py-2" id="categoryList"></div>
-    </nav>
+    <nav id="categoryList" class="p-6 overflow-x-auto hide-scrollbar flex gap-4 justify-center"></nav>
 
     <!-- Content Grid -->
-    <main class="flex-1 overflow-y-auto p-4 hide-scrollbar" id="mainContent">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pb-20" id="videoGrid"></div>
+    <main class="flex-1 overflow-y-auto p-6 hide-scrollbar">
+        <div id="videoGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-7xl mx-auto"></div>
     </main>
 
-    <!-- Video Modal Player -->
-    <div id="videoModal" class="fixed inset-0 bg-black/95 z-50 hidden flex flex-col justify-center items-center p-4 backdrop-blur-md">
-        <div class="w-full max-w-4xl bg-white rounded-2xl overflow-hidden shadow-2xl animate-fade-in relative">
-            <div class="flex justify-between items-center p-4 bg-sky-500 text-white">
-                <h3 id="modalTitle" class="font-bold text-lg truncate pr-2">عنوان الفيديو</h3>
+    <!-- Video & AI Lab Modal -->
+    <div id="videoModal" class="fixed inset-0 bg-sky-950/95 z-50 hidden flex flex-col justify-center items-center p-4 backdrop-blur-xl">
+        <div class="w-full max-w-5xl flex flex-col h-[95vh] gap-4">
+            <div class="video-wrapper">
+                <div id="playerContainer"></div>
+                <div class="protection-overlay">
+                    <div class="blocker block-top"></div>
+                    <div class="blocker block-bottom"></div>
+                </div>
+            </div>
+
+            <!-- AI Tools Panel -->
+            <div class="flex-1 bg-white rounded-[3rem] p-6 shadow-2xl flex flex-col overflow-hidden border-t-8 border-yellow-400 relative">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center gap-2">
+                        <div class="bg-sky-100 p-2 rounded-xl"><i data-lucide="cpu" class="text-sky-600 w-5 h-5"></i></div>
+                        <h3 id="modalTitle" class="text-xl font-black text-sky-900 truncate max-w-md">العنوان</h3>
+                    </div>
+                    <button onclick="closeVideo()" class="bg-red-50 text-red-500 p-3 rounded-2xl hover:bg-red-100 transition">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                    <button onclick="aiSmartExplain()" class="flex flex-col items-center p-4 bg-purple-50 rounded-[2rem] hover:bg-purple-100 transition border-2 border-purple-100">
+                        <i data-lucide="mic-2" class="w-8 h-8 text-purple-600 mb-2"></i>
+                        <span class="text-sm font-black text-purple-700">المعلم مهند</span>
+                    </button>
+                    <button onclick="aiGenerateColoring()" class="flex flex-col items-center p-4 bg-pink-50 rounded-[2rem] hover:bg-pink-100 transition border-2 border-pink-100">
+                        <i data-lucide="pencil-ruler" class="w-8 h-8 text-pink-600 mb-2"></i>
+                        <span class="text-sm font-black text-pink-700">رسم للتلوين</span>
+                    </button>
+                    <button onclick="aiSmartQuiz()" class="flex flex-col items-center p-4 bg-orange-50 rounded-[2rem] hover:bg-orange-100 transition border-2 border-orange-100">
+                        <i data-lucide="brain-circuit" class="w-8 h-8 text-orange-600 mb-2"></i>
+                        <span class="text-sm font-black text-orange-700">تحدي مهند</span>
+                    </button>
+                    <button onclick="aiSurprise()" class="flex flex-col items-center p-4 bg-green-50 rounded-[2rem] hover:bg-green-100 transition border-2 border-green-100">
+                        <i data-lucide="party-popper" class="w-8 h-8 text-green-600 mb-2"></i>
+                        <span class="text-sm font-black text-green-700">مفاجأة</span>
+                    </button>
+                </div>
+
+                <div id="aiDisplay" class="flex-1 overflow-y-auto bg-slate-50 rounded-[2rem] p-6 border-2 border-dashed border-slate-200 relative">
+                    <div id="aiPlaceholder" class="flex flex-col items-center justify-center h-full text-slate-400">
+                        <i data-lucide="wand" class="w-12 h-12 mb-3 opacity-20"></i>
+                        <p class="font-bold">مرحباً! أنا مهند، اختر أحد الأزرار لنبدأ المغامرة!</p>
+                    </div>
+                    <div id="aiContent" class="hidden text-right leading-loose text-slate-700 font-bold text-lg whitespace-pre-wrap"></div>
+                    <div id="aiImageResult" class="hidden mt-4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Parental Gate -->
+    <div id="parentalModal" class="fixed inset-0 bg-sky-950/80 z-[100] hidden flex justify-center items-center p-6 backdrop-blur-md">
+        <div class="bg-white rounded-[3.5rem] p-10 w-full max-w-md shadow-2xl text-center border-t-8 border-sky-500">
+            <h2 class="text-2xl font-black mb-6 text-slate-800">منطقة الكبار فقط 🔒</h2>
+            <div class="bg-sky-50 p-8 rounded-[2.5rem] mb-6">
+                <p id="mathQuestion" class="text-5xl font-black text-sky-600 tracking-tighter"></p>
+            </div>
+            <input type="number" id="mathAnswer" class="w-full p-5 bg-slate-100 rounded-3xl text-center text-4xl font-black mb-8 outline-none ring-sky-300 focus:ring-4 transition-all">
+            <div class="flex gap-4">
+                <button onclick="checkParentalGate()" class="flex-1 bg-sky-500 text-white font-black py-5 rounded-3xl text-xl shadow-lg shadow-sky-200">دخول</button>
+                <button onclick="closeParentalModal()" class="flex-1 bg-slate-200 font-black py-5 rounded-3xl text-xl text-slate-500">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="adminModal" class="fixed inset-0 bg-white z-[110] hidden flex flex-col">
+        <div class="p-6 bg-slate-900 text-white flex justify-between items-center shadow-lg">
+            <div class="flex items-center gap-3">
+                <i data-lucide="shield-check" class="text-sky-400"></i>
+                <h2 class="text-xl font-black">إدارة المحتوى والذكاء الاصطناعي</h2>
+            </div>
+            <button onclick="closeAdminPanel()" class="p-3 bg-slate-800 rounded-2xl hover:bg-slate-700 transition"><i data-lucide="x"></i></button>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto p-8 max-w-3xl mx-auto w-full space-y-10">
+            <!-- AI Key Section -->
+            <section class="bg-gradient-to-r from-yellow-50 to-orange-50 p-8 rounded-[2.5rem] border-2 border-yellow-100">
+                <h3 class="font-black text-yellow-800 text-xl mb-4 flex items-center gap-2">
+                    <i data-lucide="zap"></i> تفعيل المحرك الذكي للمعلم
+                </h3>
+                <p class="text-sm text-yellow-700 mb-4 font-medium leading-relaxed">جرب هذا الكود التجريبي : AIzaSyBA-fV3KuEFlwoa0NSAOqe9mjfqkWxl_eA المفتاح مطلوب لتشغيل ميزات الشرح الصوتي وتوليد صور التلوين. يمكنك الحصول عليه من المعلم مهند.</p>
                 <div class="flex gap-2">
-                    <button id="geminiQuizBtn" class="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 transition">
-                        <span>أسئلة ذكية ✨</span>
-                    </button>
-                    <button onclick="closeVideo()" class="bg-white/20 hover:bg-white/40 rounded-full p-2 transition">
-                        <i data-lucide="x" class="w-6 h-6 text-white"></i>
-                    </button>
+                    <input type="password" id="apiKeyInput" class="flex-1 p-4 rounded-2xl border-2 border-yellow-200 outline-none focus:border-yellow-500 transition-colors" placeholder="أدخل مفتاح الـ API هنا...">
+                    <button onclick="saveApiKey()" class="bg-yellow-500 text-white font-black px-8 rounded-2xl shadow-lg hover:bg-yellow-600 transition">حفظ</button>
                 </div>
-            </div>
-            <div class="p-2 bg-black relative">
-                <div class="video-container" id="playerContainer"></div>
-                <div class="video-protection-overlay">
-                    <div class="protection-zone zone-top-right"></div>
-                    <div class="protection-zone zone-bottom-right"></div>
-                    <div class="protection-zone zone-top-left"></div>
-                </div>
-            </div>
-            <!-- Gemini Insights Area -->
-            <div id="geminiInsights" class="hidden p-4 bg-yellow-50 border-t-2 border-yellow-100 overflow-y-auto max-h-48">
-                <div class="flex items-center gap-2 mb-2 text-yellow-700 font-bold">
-                    <i data-lucide="sparkles" class="w-4 h-4"></i>
-                    <span>تحدي الذكاء</span>
-                </div>
-                <div id="geminiText" class="text-sm text-gray-700 leading-relaxed italic"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Parental Gate Modal -->
-    <div id="parentalModal" class="fixed inset-0 bg-black/50 z-50 hidden flex justify-center items-center p-4">
-        <div class="bg-white rounded-2xl p-6 w-full max-w-sm text-center shadow-xl border-4 border-sky-200">
-            <div class="mb-4 text-sky-600">
-                <i data-lucide="shield-check" class="w-12 h-12 mx-auto mb-2"></i>
-                <h3 class="font-bold text-xl">بوابة الأهل</h3>
-            </div>
-            <p class="mb-4 text-gray-600 font-bold" id="mathQuestion"></p>
-            <input type="number" id="mathAnswer" class="w-full p-3 border-2 border-gray-300 rounded-xl text-center text-xl mb-4 focus:border-sky-500 outline-none" placeholder="اكتب الناتج">
-            <div class="flex gap-2">
-                <button onclick="checkParentalGate()" class="flex-1 bg-sky-500 text-white font-bold py-3 rounded-xl hover:bg-sky-600">دخول</button>
-                <button onclick="closeParentalModal()" class="flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-300">إلغاء</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Admin Panel Modal -->
-    <div id="adminModal" class="fixed inset-0 bg-white z-[60] hidden flex flex-col h-full overflow-hidden">
-        <div class="bg-slate-800 text-white p-4 shadow-lg flex justify-between items-center shrink-0">
-            <div class="flex items-center gap-2">
-                <i data-lucide="settings" class="w-6 h-6 text-sky-400"></i>
-                <h2 class="text-xl font-bold">لوحة التحكم</h2>
-            </div>
-            <button onclick="closeAdminPanel()" class="bg-slate-700 p-2 rounded-full hover:bg-slate-600 transition">
-                <i data-lucide="x" class="w-6 h-6"></i>
-            </button>
-        </div>
-        <div class="flex-1 overflow-y-auto p-4 bg-slate-50">
+            </section>
             
-            <!-- API Key Settings -->
-            <div class="mb-6 bg-slate-200 p-4 rounded-xl border border-slate-300">
-                <h3 class="font-bold text-slate-700 mb-2 flex items-center gap-2">
-                    <i data-lucide="key" class="text-slate-500"></i> إعدادات Gemini API
-                </h3>
-                <p class="text-xs text-slate-500 mb-3">أدخل مفتاح API الخاص بك لتعمل الميزات الذكية خارج المتصفح.</p>
-                <div class="flex gap-2">
-                    <input type="password" id="apiKeyInput" class="flex-1 p-2 border rounded-lg text-sm" placeholder="أدخل مفتاح Gemini هنا...">
-                    <button onclick="saveApiKey()" class="bg-slate-600 text-white px-3 py-1 rounded-lg text-xs font-bold">حفظ</button>
+            <!-- Add Video Section -->
+            <section class="bg-white p-8 rounded-[2.5rem] border-2 border-slate-100 shadow-sm">
+                <h3 class="font-black text-slate-800 text-xl mb-6 text-center underline decoration-sky-300 decoration-4 underline-offset-8">إضافة محتوى جديد (فيديو أو قائمة تشغيل)</h3>
+                <div class="grid gap-4">
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-slate-400 mr-2">رابط الفيديو أو قائمة التشغيل</label>
+                        <input type="text" id="newVideoUrl" class="w-full p-4 bg-slate-50 rounded-2xl border text-right focus:ring-2 ring-sky-100 outline-none" placeholder="https://www.youtube.com/playlist?list=...">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-slate-400 mr-2">اسم المحتوى (سيظهر للطفل)</label>
+                        <input type="text" id="newVideoTitle" class="w-full p-4 bg-slate-50 rounded-2xl border text-right focus:ring-2 ring-sky-100 outline-none" placeholder="مثال: سلسلة قصص الأنبياء">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-slate-400 mr-2">اختر القسم المناسب</label>
+                        <select id="newVideoCategory" class="w-full p-4 bg-slate-50 rounded-2xl border text-right outline-none"></select>
+                    </div>
+                    <button onclick="addNewVideo()" class="w-full bg-sky-600 text-white font-black py-5 rounded-2xl shadow-xl hover:bg-sky-700 transition mt-4 text-lg">إضافة للمكتبة 📥</button>
                 </div>
-            </div>
+            </section>
 
-            <!-- Gemini Parent AI -->
-            <div class="mb-6 bg-gradient-to-r from-purple-600 to-indigo-600 p-4 rounded-xl text-white shadow-lg">
-                <h3 class="font-bold mb-2 flex items-center gap-2">
-                    <i data-lucide="brain-circuit"></i> تحليل المحتوى الذكي ✨
-                </h3>
-                <p class="text-sm opacity-90 mb-4">اضغط للحصول على نصائح تربوية بناءً على فيديوهاتك المضافة.</p>
-                <button onclick="generateParentAdvice()" id="adviceBtn" class="bg-white text-indigo-600 px-4 py-2 rounded-lg font-bold hover:bg-indigo-50 transition flex items-center gap-2">
-                    <span id="adviceBtnText">الحصول على نصيحة ✨</span>
-                </button>
-                <div id="adviceDisplay" class="hidden mt-4 p-3 bg-white/10 rounded-lg text-sm italic border border-white/20 animate-fade-in"></div>
-            </div>
-
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-6">
-                <h3 class="font-bold text-slate-700 mb-4 flex items-center gap-2">
-                    <i data-lucide="plus-circle" class="text-green-500"></i> إضافة فيديو جديد
-                </h3>
-                <div class="space-y-3">
-                    <input type="text" id="newVideoUrl" class="w-full p-2 border rounded-lg" placeholder="رابط يوتيوب">
-                    <input type="text" id="newVideoTitle" class="w-full p-2 border rounded-lg" placeholder="العنوان">
-                    <select id="newVideoCategory" class="w-full p-2 border rounded-lg bg-white"></select>
-                    <button onclick="addNewVideo()" class="w-full bg-green-500 text-white font-bold py-3 rounded-lg hover:bg-green-600 transition shadow-lg shadow-green-200">إضافة الفيديو</button>
-                </div>
-            </div>
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-slate-700 flex items-center gap-2"><i data-lucide="list-video" class="text-sky-500"></i> المحتوى الحالي</h3>
-                    <button onclick="resetToDefaults()" class="text-xs text-red-500 underline">استعادة الأصلي</button>
-                </div>
-                <div id="adminVideoList" class="space-y-3"></div>
-            </div>
+            <!-- Video List Manager -->
+            <section class="space-y-4">
+                <h3 class="font-black text-slate-500 text-sm uppercase tracking-widest mr-2">المحتوى الحالي</h3>
+                <div id="adminVideoList" class="grid gap-3"></div>
+            </section>
         </div>
     </div>
 
     <script>
         lucide.createIcons();
 
-        // Gemini API Configuration
+        // -- قاعدة البيانات --
         let userApiKey = localStorage.getItem('gemini_api_key') || "";
-
-        function saveApiKey() {
-            const input = document.getElementById('apiKeyInput');
-            if (input.value.trim()) {
-                userApiKey = input.value.trim();
-                localStorage.setItem('gemini_api_key', userApiKey);
-                alert('تم حفظ مفتاح API بنجاح!');
-            }
-        }
-
-        async function callGemini(prompt, systemInstruction = "") {
-            // Priority: User manually entered key > Environment key (if any)
-            const activeKey = userApiKey || ""; 
-            
-            if (!activeKey) {
-                return "خطأ: يرجى إدخال مفتاح Gemini API في لوحة التحكم (إعدادات الأهل) لتعمل هذه الميزة.";
-            }
-
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${activeKey}`;
-            const payload = {
-                contents: [{ parts: [{ text: prompt }] }],
-                systemInstruction: { parts: [{ text: systemInstruction }] }
-            };
-
-            for (let i = 0; i < 5; i++) {
-                try {
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    const result = await response.json();
-                    
-                    if (result.error) {
-                        return `خطأ من Gemini: ${result.error.message}`;
-                    }
-                    
-                    return result.candidates?.[0]?.content?.parts?.[0]?.text || "عذراً، لم أستطع توليد رد حالياً.";
-                } catch (e) {
-                    const delay = Math.pow(2, i) * 1000;
-                    await new Promise(r => setTimeout(r, delay));
-                }
-            }
-            return "فشل الاتصال بالذكاء الاصطناعي بعد عدة محاولات.";
-        }
+        let videos = JSON.parse(localStorage.getItem('safeKidsVideos')) || [
+            { id: 1, title: 'حكاية الحروف العربية', category: 'education', type: 'video', src: 'yXzFhQ54bQk', thumb: 'https://img.youtube.com/vi/yXzFhQ54bQk/hqdefault.jpg' },
+            { id: 2, title: 'قصة الأمانة الصغير', category: 'stories', type: 'video', src: '0Kq3T9-j9l8', thumb: 'https://img.youtube.com/vi/0Kq3T9-j9l8/hqdefault.jpg' }
+        ];
 
         const categories = [
-            { id: 'all', name: 'الكل', icon: 'layout-grid', color: 'bg-indigo-500' },
-            { id: 'education', name: 'تعليم', icon: 'book-open', color: 'bg-green-500' },
-            { id: 'cartoons', name: 'كرتون', icon: 'tv', color: 'bg-pink-500' },
+            { id: 'all', name: 'الكل', icon: 'layout-grid', color: 'bg-sky-500' },
+            { id: 'stories', name: 'قصص', icon: 'book-open', color: 'bg-purple-500' },
+            { id: 'cartoon', name: 'كرتون', icon: 'tv', color: 'bg-pink-500' },
             { id: 'songs', name: 'أناشيد', icon: 'music', color: 'bg-yellow-500' },
-            { id: 'stories', name: 'قصص', icon: 'book', color: 'bg-purple-500' }
+            { id: 'education', name: 'تعليم', icon: 'graduation-cap', color: 'bg-emerald-500' }
         ];
 
-        const defaultVideos = [
-            { id: 1, title: 'تعلم الحروف العربية', category: 'education', type: 'youtube', src: 'yXzFhQ54bQk', thumb: 'https://img.youtube.com/vi/yXzFhQ54bQk/hqdefault.jpg' },
-            { id: 2, title: 'سورة الفاتحة للأطفال', category: 'education', type: 'youtube', src: '0Kq3T9-j9l8', thumb: 'https://img.youtube.com/vi/0Kq3T9-j9l8/hqdefault.jpg' },
-            { id: 3, title: 'الألوان باللغة العربية', category: 'education', type: 'youtube', src: 'z8yT_B1tYyE', thumb: 'https://img.youtube.com/vi/z8yT_B1tYyE/hqdefault.jpg' }
-        ];
-
-        let videos = [];
         let currentCategory = 'all';
-        let parentalAnswer = 0;
+        let currentPlayingTitle = "";
 
-        function init() {
-            loadVideos();
-            renderCategories();
-            renderVideos();
-            renderAdminCategories();
-            // Show saved key in input if exists
-            if (userApiKey) document.getElementById('apiKeyInput').value = userApiKey;
+        // -- المحسن: استخراج معرفات يوتيوب (فيديو أو قائمة) --
+        function parseYoutubeUrl(url) {
+            // Check for Playlist
+            const playlistMatch = url.match(/[&?]list=([^&]+)/);
+            if (playlistMatch) return { type: 'playlist', id: playlistMatch[1] };
+            
+            // Check for Video
+            const videoMatch = url.match(/^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/);
+            if (videoMatch && videoMatch[7].length === 11) return { type: 'video', id: videoMatch[7] };
+            
+            return null;
         }
 
-        function loadVideos() {
-            const stored = localStorage.getItem('safeKidsVideos');
-            videos = stored ? JSON.parse(stored) : [...defaultVideos];
+        // -- المحرك الذكي --
+        async function callGemini(prompt, system = "") {
+            if (!userApiKey) return "MISSING_KEY";
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${userApiKey}`;
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }],
+                        systemInstruction: { parts: [{ text: system }] }
+                    })
+                });
+                const data = await response.json();
+                return data.candidates?.[0]?.content?.parts?.[0]?.text || "أنا هنا معك، اطلب ما تريد!";
+            } catch (e) { return "عذراً، هناك مشكلة في الاتصال بالذكاء الاصطناعي."; }
         }
 
-        function saveVideos() {
-            localStorage.setItem('safeKidsVideos', JSON.stringify(videos));
-            renderVideos();
-            renderAdminVideoList();
+        async function generateImage(prompt) {
+            if (!userApiKey) return null;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${userApiKey}`;
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify({ instances: { prompt: prompt }, parameters: { sampleCount: 1 } })
+                });
+                const result = await response.json();
+                return `data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`;
+            } catch (e) { return null; }
         }
 
-        function renderCategories() {
-            const container = document.getElementById('categoryList');
-            container.innerHTML = categories.map(cat => `
-                <button onclick="filterCategory('${cat.id}')"
-                    class="category-btn whitespace-nowrap px-6 py-3 rounded-full font-bold text-white shadow-md transition-all flex items-center gap-2 ${cat.id === currentCategory ? 'active ' + cat.color : 'bg-white text-gray-500 hover:bg-gray-50'}">
-                    <i data-lucide="${cat.icon}" class="w-4 h-4"></i>
-                    <span>${cat.name}</span>
-                </button>
-            `).join('');
-            lucide.createIcons();
+        // -- ميزات مهند الذكية --
+        function setAiLoading(isLoading) {
+            const placeholder = document.getElementById('aiPlaceholder');
+            const content = document.getElementById('aiContent');
+            const imgRes = document.getElementById('aiImageResult');
+            if (isLoading) {
+                placeholder.innerHTML = `<div class="ai-loading text-sky-500 flex flex-col items-center"><i data-lucide="sparkles" class="w-12 h-12 mb-3"></i><span class="font-black text-xl">مهند يفكر لك...</span></div>`;
+                placeholder.classList.remove('hidden');
+                content.classList.add('hidden');
+                imgRes.classList.add('hidden');
+                lucide.createIcons();
+            }
         }
 
-        function filterCategory(catId) {
-            currentCategory = catId;
-            renderCategories();
-            renderVideos();
+        function showAiText(text) {
+            const content = document.getElementById('aiContent');
+            document.getElementById('aiPlaceholder').classList.add('hidden');
+            content.classList.remove('hidden');
+            content.innerHTML = text;
+            setAiLoading(false);
         }
 
+        async function aiSmartExplain() {
+            setAiLoading(true);
+            const res = await callGemini(`اشرح لطفل صغير ماذا سيتعلم من هذا المحتوى (فيديو أو قائمة): "${currentPlayingTitle}". اجعل الأسلوب مليئاً بالحماس والتشجيع.`, "أنت المعلم مهند، أفضل صديق للأطفال.");
+            if(res === "MISSING_KEY") showKeyError(); else showAiText(res);
+        }
+
+        async function aiSmartQuiz() {
+            setAiLoading(true);
+            const res = await callGemini(`تخيل أنك المعلم مهند، اطرح على الطفل 3 أسئلة مضحكة وسهلة جداً ليختبر ذكاءه بعد مشاهدة محتوى "${currentPlayingTitle}". استخدم ايموجي كثيراً.`, "أنت محفز ذكي ومرح.");
+            if(res === "MISSING_KEY") showKeyError(); else showAiText(res);
+        }
+
+        async function aiGenerateColoring() {
+            setAiLoading(true);
+            const desc = await callGemini(`Create a very simple one-sentence English description for a coloring book page based on: "${currentPlayingTitle}".`, "Return only the description.");
+            const img = await generateImage(`Minimalist children coloring page, thick black lines, white background, no shading, subject: ${desc}`);
+            if (img) {
+                const imgRes = document.getElementById('aiImageResult');
+                imgRes.innerHTML = `<div class="bg-white p-4 rounded-3xl border-4 border-dashed border-sky-200"><img src="${img}" class="w-full rounded-2xl mb-4"><a href="${img}" download="coloring-page.png" class="block bg-pink-500 text-white p-4 text-center font-black rounded-2xl hover:bg-pink-600 transition shadow-lg">اضغط هنا لتحميل صورة التلوين 🖍️</a></div>`;
+                imgRes.classList.remove('hidden');
+                document.getElementById('aiPlaceholder').classList.add('hidden');
+                setAiLoading(false);
+            } else showAiText("عذراً، لم أستطع إيجاد قلمي السحري الآن!");
+        }
+
+        async function aiSurprise() {
+            setAiLoading(true);
+            const res = await callGemini(`أخبر الطفل حقيقة مدهشة جداً أو نكتة مضحكة مرتبطة بمحتوى: "${currentPlayingTitle}".`, "أنت صديق الأطفال المرح مهند.");
+            showAiText(res);
+        }
+
+        function showKeyError() {
+            showAiText("⚠️ يحتاج المعلم مهند إلى 'مفتاح سحري' (API Key) من الأهل لكي يتمكن من التحدث والرسم.");
+        }
+
+        // -- إدارة المحتوى --
         function renderVideos() {
             const grid = document.getElementById('videoGrid');
             const filtered = currentCategory === 'all' ? videos : videos.filter(v => v.category === currentCategory);
-            grid.innerHTML = filtered.map(video => `
-                <div onclick="playVideo('${video.src}', '${video.title}', '${video.type}')" 
-                     class="kid-card bg-white rounded-2xl overflow-hidden shadow-lg border-b-4 border-gray-200 hover:border-sky-400 group relative">
-                    <div class="aspect-video relative">
-                        <img src="${video.thumb}" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-black/20 flex items-center justify-center group-hover:bg-black/10 transition">
-                            <div class="bg-white/90 rounded-full p-3 shadow-xl transform group-hover:scale-110 transition">
-                                <i data-lucide="play" class="w-8 h-8 text-sky-500 fill-sky-500 ml-1"></i>
-                            </div>
+            
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-20 text-center text-slate-400 font-bold"><i data-lucide="info" class="w-12 h-12 mx-auto mb-2 opacity-20"></i>هذا القسم لا يزال ينتظر إضافة فيديوهات جميلة!</div>`;
+            } else {
+                grid.innerHTML = filtered.map(v => `
+                    <div onclick="playContent('${v.type}', '${v.src}', '${v.title}')" class="kid-card bg-white overflow-hidden group">
+                        <div class="aspect-video relative overflow-hidden">
+                            <img src="${v.thumb}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                            ${v.type === 'playlist' ? `
+                                <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                    <div class="bg-white/20 backdrop-blur-md p-3 rounded-full border border-white/30">
+                                        <i data-lucide="layers" class="text-white w-8 h-8"></i>
+                                    </div>
+                                    <span class="absolute top-3 right-3 bg-white px-3 py-1 rounded-full text-[10px] font-black">سلسلة</span>
+                                </div>
+                            ` : ''}
+                            <div class="absolute inset-0 bg-sky-500/10 group-hover:bg-transparent transition-colors"></div>
+                        </div>
+                        <div class="p-6 bg-white flex flex-col items-end">
+                            <span class="text-[10px] font-black text-sky-500 uppercase mb-1">${categories.find(c => c.id === v.category)?.name || 'عام'}</span>
+                            <div class="text-lg font-black text-slate-800 truncate w-full text-right">${v.title}</div>
                         </div>
                     </div>
-                    <div class="p-3 text-right">
-                        <h3 class="font-bold text-gray-800 text-lg line-clamp-2">${video.title}</h3>
-                        <span class="text-xs text-sky-500 bg-sky-50 px-2 py-1 rounded-full mt-2 inline-block">${categories.find(c => c.id === video.category).name}</span>
-                    </div>
-                </div>
-            `).join('');
-            lucide.createIcons();
-        }
-
-        function playVideo(src, title, type) {
-            const modal = document.getElementById('videoModal');
-            const container = document.getElementById('playerContainer');
-            const insights = document.getElementById('geminiInsights');
-            const quizBtn = document.getElementById('geminiQuizBtn');
-            
-            document.getElementById('modalTitle').textContent = title;
-            insights.classList.add('hidden');
-            modal.classList.remove('hidden');
-
-            quizBtn.onclick = () => generateQuiz(title);
-
-            if (type === 'youtube') {
-                container.innerHTML = `<iframe 
-                    src="https://www.youtube-nocookie.com/embed/${src}?autoplay=1&rel=0&modestbranding=1&iv_load_policy=3&showinfo=0&disablekb=1" 
-                    frameborder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowfullscreen></iframe>`;
-            } else {
-                container.innerHTML = `<video controls autoplay class="w-full h-full"><source src="${src}" type="video/mp4"></video>`;
+                `).join('');
             }
-        }
-
-        async function generateQuiz(videoTitle) {
-            const insights = document.getElementById('geminiInsights');
-            const geminiText = document.getElementById('geminiText');
-            insights.classList.remove('hidden');
-            geminiText.textContent = "جاري التفكير في أسئلة ذكية...";
-            
-            const prompt = `أعطني 3 أسئلة تفاعلية بسيطة للأطفال يمكن للأهل طرحها بعد مشاهدة فيديو بعنوان "${videoTitle}". اجعلها تشجع على التفكير والقيم.`;
-            const systemPrompt = "أنت مساعد تربوي متخصص في أدب الطفل والتعلم التفاعلي. رد باللغة العربية بأسلوب لطيف ومناسب للأطفال.";
-            
-            const result = await callGemini(prompt, systemPrompt);
-            geminiText.textContent = result;
-        }
-
-        async function generateParentAdvice() {
-            const btn = document.getElementById('adviceBtn');
-            const btnText = document.getElementById('adviceBtnText');
-            const display = document.getElementById('adviceDisplay');
-            
-            btn.disabled = true;
-            btnText.textContent = "جاري التحليل... ✨";
-            
-            const videoTitles = videos.map(v => v.title).join(", ");
-            const prompt = `بناءً على قائمة الفيديوهات هذه التي يشاهدها طفلي: [${videoTitles}]، قدم لي نصيحة تربوية واحدة مختصرة وملهمة حول كيفية تعزيز التعلم من هذا المحتوى.`;
-            const systemPrompt = "أنت خبير في التربية الإيجابية وتحليل المحتوى الرقمي للأطفال. قدم نصيحة عملية ومختصرة للأهل.";
-            
-            const result = await callGemini(prompt, systemPrompt);
-            
-            display.textContent = result;
-            display.classList.remove('hidden');
-            btn.disabled = false;
-            btnText.textContent = "الحصول على نصيحة أخرى ✨";
-        }
-
-        function closeVideo() {
-            document.getElementById('videoModal').classList.add('hidden');
-            document.getElementById('playerContainer').innerHTML = '';
-        }
-
-        function showParentalGate() {
-            const n1 = Math.floor(Math.random() * 9) + 1;
-            const n2 = Math.floor(Math.random() * 9) + 1;
-            parentalAnswer = n1 + n2;
-            document.getElementById('mathQuestion').textContent = `للوالدين فقط: كم يساوي ${n1} + ${n2}؟`;
-            document.getElementById('mathAnswer').value = '';
-            document.getElementById('parentalModal').classList.remove('hidden');
-        }
-
-        function checkParentalGate() {
-            const ans = document.getElementById('mathAnswer').value;
-            if (parseInt(ans) === parentalAnswer) {
-                closeParentalModal();
-                openAdminPanel();
-            } else {
-                alert('إجابة خاطئة!');
-            }
-        }
-
-        function closeParentalModal() {
-            document.getElementById('parentalModal').classList.add('hidden');
-        }
-
-        function openAdminPanel() {
-            renderAdminVideoList();
-            document.getElementById('adminModal').classList.remove('hidden');
-        }
-
-        function closeAdminPanel() {
-            document.getElementById('adminModal').classList.add('hidden');
-        }
-
-        function renderAdminCategories() {
-            const select = document.getElementById('newVideoCategory');
-            select.innerHTML = categories.filter(c => c.id !== 'all').map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-        }
-
-        function renderAdminVideoList() {
-            const list = document.getElementById('adminVideoList');
-            list.innerHTML = videos.map(v => `
-                <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
-                    <img src="${v.thumb}" class="w-16 h-9 object-cover rounded">
-                    <div class="flex-1 min-w-0 text-right">
-                        <p class="font-bold text-sm truncate">${v.title}</p>
-                    </div>
-                    <button onclick="deleteVideo(${v.id})" class="text-red-500"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
-                </div>
-            `).join('');
             lucide.createIcons();
         }
 
@@ -452,38 +339,133 @@
             const url = document.getElementById('newVideoUrl').value;
             const title = document.getElementById('newVideoTitle').value;
             const cat = document.getElementById('newVideoCategory').value;
-            const idMatch = url.match(/(?:youtu\.be\/|youtube\.com(?:\/embed\/|\/v\/|\/watch\?v=|\/user\/\S+|\/ytscreeningroom\?v=))([\w\-]{11})/);
-            
-            if (idMatch && title) {
-                videos.push({
-                    id: Date.now(),
-                    title: title,
-                    category: cat,
-                    type: 'youtube',
-                    src: idMatch[1],
-                    thumb: `https://img.youtube.com/vi/${idMatch[1]}/hqdefault.jpg`
+            const info = parseYoutubeUrl(url);
+
+            if (info && title) {
+                const thumb = info.type === 'playlist' 
+                    ? `https://img.youtube.com/vi_webp/qI5nN_9X_X8/maxresdefault.jpg` // Placeholder for playlist
+                    : `https://img.youtube.com/vi/${info.id}/hqdefault.jpg`;
+
+                videos.unshift({ 
+                    id: Date.now(), 
+                    title, 
+                    category: cat, 
+                    type: info.type, 
+                    src: info.id, 
+                    thumb: thumb 
                 });
-                saveVideos();
+                
+                localStorage.setItem('safeKidsVideos', JSON.stringify(videos));
                 document.getElementById('newVideoUrl').value = '';
                 document.getElementById('newVideoTitle').value = '';
-            } else {
-                alert('البيانات غير صحيحة');
-            }
+                
+                renderVideos();
+                renderAdminVideoList();
+                alert('تمت إضافة المحتوى الجديد بنجاح! 🎊');
+            } else alert('تأكد من كتابة العنوان ووضع رابط يوتيوب صحيح (فيديو أو قائمة)');
         }
 
         function deleteVideo(id) {
-            videos = videos.filter(v => v.id !== id);
-            saveVideos();
+            if(confirm('هل أنت متأكد من حذف هذا المحتوى؟')) {
+                videos = videos.filter(v => v.id !== id);
+                localStorage.setItem('safeKidsVideos', JSON.stringify(videos));
+                renderVideos();
+                renderAdminVideoList();
+            }
         }
 
-        function resetToDefaults() {
-            localStorage.removeItem('safeKidsVideos');
-            loadVideos();
-            renderVideos();
+        // -- واجهة المستخدم --
+        function playContent(type, src, title) {
+            currentPlayingTitle = title;
+            document.getElementById('videoModal').classList.remove('hidden');
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('aiContent').classList.add('hidden');
+            document.getElementById('aiImageResult').classList.add('hidden');
+            document.getElementById('aiPlaceholder').classList.remove('hidden');
+            
+            let embedUrl = "";
+            if (type === 'video') {
+                embedUrl = `https://www.youtube-nocookie.com/embed/${src}?autoplay=1&rel=0&controls=1`;
+            } else {
+                embedUrl = `https://www.youtube-nocookie.com/embed?listType=playlist&list=${src}&autoplay=1`;
+            }
+
+            document.getElementById('playerContainer').innerHTML = `<iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>`;
+        }
+
+        function closeVideo() {
+            document.getElementById('videoModal').classList.add('hidden');
+            document.getElementById('playerContainer').innerHTML = "";
+        }
+
+        let mathAns = 0;
+        function showParentalGate() {
+            const a = Math.floor(Math.random()*9) + 1, b = Math.floor(Math.random()*9) + 1;
+            mathAns = a + b;
+            document.getElementById('mathQuestion').textContent = `${a} + ${b} = ؟`;
+            document.getElementById('parentalModal').classList.remove('hidden');
+        }
+
+        function checkParentalGate() {
+            if(parseInt(document.getElementById('mathAnswer').value) === mathAns) {
+                document.getElementById('parentalModal').classList.add('hidden');
+                document.getElementById('mathAnswer').value = '';
+                openAdminPanel();
+            } else {
+                alert('النتيجة غير صحيحة، حاول مرة أخرى!');
+                document.getElementById('mathAnswer').value = '';
+                showParentalGate();
+            }
+        }
+
+        function openAdminPanel() {
+            document.getElementById('adminModal').classList.remove('hidden');
+            document.getElementById('newVideoCategory').innerHTML = categories.slice(1).map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            document.getElementById('apiKeyInput').value = userApiKey;
             renderAdminVideoList();
         }
 
-        init();
+        function saveApiKey() {
+            userApiKey = document.getElementById('apiKeyInput').value.trim();
+            localStorage.setItem('gemini_api_key', userApiKey);
+            alert("تم حفظ مفتاح الذكاء الاصطناعي بنجاح! ✨");
+        }
+
+        function renderAdminVideoList() {
+            document.getElementById('adminVideoList').innerHTML = videos.map(v => `
+                <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-sky-200 transition">
+                    <button onclick="deleteVideo(${v.id})" class="text-red-400 hover:text-red-600 p-2"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                    <div class="text-right flex items-center gap-3">
+                        <div>
+                            <div class="font-black text-slate-700">${v.title}</div>
+                            <div class="text-xs font-bold text-sky-400">${categories.find(c => c.id === v.category)?.name}</div>
+                        </div>
+                        <div class="bg-slate-200 p-2 rounded-xl">
+                            <i data-lucide="${v.type === 'playlist' ? 'layers' : 'play'}" class="w-4 h-4 text-slate-500"></i>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function closeAdminPanel() { document.getElementById('adminModal').classList.add('hidden'); }
+        function closeParentalModal() { document.getElementById('parentalModal').classList.add('hidden'); }
+
+        // -- البداية --
+        window.onload = () => {
+            const nav = document.getElementById('categoryList');
+            nav.innerHTML = categories.map(c => `
+                <button onclick="currentCategory='${c.id}'; window.onload();" 
+                class="category-btn px-8 py-3 rounded-full font-black text-lg transition-all ${currentCategory === c.id ? c.color + ' text-white scale-110 shadow-xl' : 'bg-white text-slate-400 hover:bg-slate-50'}">
+                    <span class="flex items-center gap-2">${c.name}</span>
+                </button>
+            `).join('');
+            renderVideos();
+        };
     </script>
+    <footer>
+        <p>&copy; 2025 Developed by Mohanad Al-Sadi </p>
+    </footer>    
 </body>
 </html>
