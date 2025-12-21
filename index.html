@@ -9,7 +9,24 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root { --primary: #0ea5e9; --secondary: #f59e0b; }
-        body { font-family: 'Tajawal', sans-serif; background-color: #f0f9ff; user-select: none; transition: all 0.5s ease; overflow: hidden; }
+        body { font-family: 'Tajawal', sans-serif;
+        background-image: url('background-butterflies.png'); /* رابط الصورة */
+        background-size: cover; /* تجعل الصورة تغطي كامل الشاشة */
+        background-position: center; /* توسيط الصورة */
+        background-attachment: fixed; /* جعل الخلفية ثابتة أثناء التمرير */
+        background-repeat: no-repeat;
+        background-color: #f0f9ff;
+        user-select: none;
+        transition: all 0.5s ease;
+        overflow: hidden;
+       }
+
+       /* إضافة طبقة حماية للنصوص لتكون واضحة فوق الخلفية الملونة */
+        main {
+            background: rgba(248, 250, 252, 0.4); /* طبقة بيضاء شفافة جداً */
+            backdrop-filter: blur(5px); /* تأثير ضبابي خفيف لإبراز البطاقات */
+        }
+        
         .kid-card { transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; border-radius: 2.5rem; border: 6px solid white; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
         .kid-card:hover { transform: translateY(-10px) rotate(1deg); box-shadow: 0 20px 30px rgba(0,0,0,0.1); }
         .video-wrapper { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 2rem; overflow: hidden; }
@@ -469,3 +486,4 @@
     </footer>    
 </body>
 </html>
+
