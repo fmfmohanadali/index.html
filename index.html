@@ -160,6 +160,19 @@
             </button>
         </div>
         <div class="flex-1 overflow-y-auto p-4 bg-slate-50">
+            
+            <!-- API Key Settings -->
+            <div class="mb-6 bg-slate-200 p-4 rounded-xl border border-slate-300">
+                <h3 class="font-bold text-slate-700 mb-2 flex items-center gap-2">
+                    <i data-lucide="key" class="text-slate-500"></i> إعدادات Gemini API
+                </h3>
+                <p class="text-xs text-slate-500 mb-3">أدخل مفتاح API الخاص بك لتعمل الميزات الذكية خارج المتصفح.</p>
+                <div class="flex gap-2">
+                    <input type="password" id="apiKeyInput" class="flex-1 p-2 border rounded-lg text-sm" placeholder="أدخل مفتاح Gemini هنا...">
+                    <button onclick="saveApiKey()" class="bg-slate-600 text-white px-3 py-1 rounded-lg text-xs font-bold">حفظ</button>
+                </div>
+            </div>
+
             <!-- Gemini Parent AI -->
             <div class="mb-6 bg-gradient-to-r from-purple-600 to-indigo-600 p-4 rounded-xl text-white shadow-lg">
                 <h3 class="font-bold mb-2 flex items-center gap-2">
@@ -197,10 +210,26 @@
         lucide.createIcons();
 
         // Gemini API Configuration
-        const apiKey = ""; // Provided by the environment
+        let userApiKey = localStorage.getItem('gemini_api_key') || "";
+
+        function saveApiKey() {
+            const input = document.getElementById('apiKeyInput');
+            if (input.value.trim()) {
+                userApiKey = input.value.trim();
+                localStorage.setItem('gemini_api_key', userApiKey);
+                alert('تم حفظ مفتاح API بنجاح!');
+            }
+        }
 
         async function callGemini(prompt, systemInstruction = "") {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            // Priority: User manually entered key > Environment key (if any)
+            const activeKey = userApiKey || ""; 
+            
+            if (!activeKey) {
+                return "خطأ: يرجى إدخال مفتاح Gemini API في لوحة التحكم (إعدادات الأهل) لتعمل هذه الميزة.";
+            }
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${activeKey}`;
             const payload = {
                 contents: [{ parts: [{ text: prompt }] }],
                 systemInstruction: { parts: [{ text: systemInstruction }] }
@@ -214,6 +243,11 @@
                         body: JSON.stringify(payload)
                     });
                     const result = await response.json();
+                    
+                    if (result.error) {
+                        return `خطأ من Gemini: ${result.error.message}`;
+                    }
+                    
                     return result.candidates?.[0]?.content?.parts?.[0]?.text || "عذراً، لم أستطع توليد رد حالياً.";
                 } catch (e) {
                     const delay = Math.pow(2, i) * 1000;
@@ -246,6 +280,8 @@
             renderCategories();
             renderVideos();
             renderAdminCategories();
+            // Show saved key in input if exists
+            if (userApiKey) document.getElementById('apiKeyInput').value = userApiKey;
         }
 
         function loadVideos() {
